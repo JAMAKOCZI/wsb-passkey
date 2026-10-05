@@ -4,7 +4,36 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)]()
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)]()
+[![Release](https://img.shields.io/badge/Download-WSBPasskey.exe-success.svg)](https://github.com/JAMAKOCZI/wsb-passkey/releases)
+
+---
+
+## ⚡ Szybki start (Bez instalowania czegokolwiek)
+
+**Nie musisz instalować Pythona ani niczego kompilować.** 
+
+### 1. Pobierz program
+Wejdź w zakładkę **[Releases](https://github.com/JAMAKOCZI/wsb-passkey/releases)** po prawej stronie i pobierz gotowy plik **`WSBPasskey.exe`**.
+
+### 2. Wrzuć na pendrive
+Skopiuj pobrany plik `WSBPasskey.exe` bezpośrednio na swój pendrive.
+> **Czy plik musi być w folderze?**  
+> **Nie!** Może leżeć luzem w katalogu głównym pendrive'a (np. `E:\WSBPasskey.exe`), tak aby był pod ręką zaraz po podłączeniu. Program automatycznie utworzy obok siebie zaszyfrowany plik z danymi (`wsb_passkey.dat`).
+
+### 3. Skonfiguruj na swoim komputerze (robisz to tylko raz)
+1. Uruchom `WSBPasskey.exe` z pendrive'a na swoim prywatnym komputerze.
+2. Wyskoczy okno pierwszej konfiguracji:
+   - Podaj swój uczelniany adres e-mail (np. `12345@student.merito.pl`),
+   - Wpisz hasło do konta uczelnianego,
+   - Wymyśl swój **PIN** (minimum 6 znaków).
+3. Gotowe! Twoje hasło zostało zaszyfrowane w pliku `wsb_passkey.dat` na pendrivie.
+
+### 4. Użycie na uczelni
+1. Wkładasz pendrive do portu USB w sali komputerowej.
+2. Uruchamiasz `WSBPasskey.exe` i wpisujesz swój PIN.
+3. Przeglądarka otwiera się, sama przechodzi przez bramkę logowania WSB oraz Microsoft i loguje Cię na konto MeritoGo.
+4. **Kończysz pracę? Po prostu wyjmij pendrive.**
+   - W ciągu 1-2 sekund program wyloguje sesję z serwerów uczelni i Microsoftu, zamknie przeglądarkę i bezpowrotnie skasuje cały tymczasowy profil (ciasteczka, historię, hasła). Na komputerze uczelni nie zostaje żaden ślad.
 
 ---
 
@@ -15,11 +44,7 @@ Logowanie na komputerach w pracowniach uczelnianych to mały koszmar:
 - Wpisywanie złożonego hasła na oczach całej sali wykładowej/ćwiczeniowej nie należy do bezpiecznych ani wygodnych.
 - Najgorsze: **zapomnienie o wylogowaniu się**. Zostawienie aktywnej sesji Microsoft 365 / MeritoGo na komputerze w sali oznacza, że kolejna osoba ma pełen dostęp do Twoich ocen, dokumentów, czatów Teams i poczty.
 
-**WSB Passkey** zamienia zwykły pendrive w fizyczny klucz dostępu:
-1. Wkładasz pendrive do portu USB i uruchamiasz jeden plik.
-2. Wpisujesz krótki PIN (hasło nigdy nie leży w pliku jawnym tekstem).
-3. Przeglądarka otwiera się, sama przechodzi przez bramkę logowania WSB (SAML/CAS) oraz Microsoft Entra ID i loguje Cię na konto.
-4. **Kończysz pracę? Po prostu wyciągasz pendrive z USB.** Program w ułamku sekundy wysyła żądania wylogowania do uczelni i Microsoftu, zamyka przeglądarkę i bezpowrotnie kasuje cały tymczasowy profil (ciastka, historię, pamięć podręczną).
+**WSB Passkey** zamienia zwykły pendrive w fizyczny token bezpieczeństwa – jak klucz U2F/FIDO, ale dopasowany do specyfiki uczelnianych portali logowania.
 
 ---
 
@@ -35,8 +60,8 @@ Na uczelni nikt nie da Ci konta admina.
 
 ### 2. Problem wyjmowania pendrive'a (`STATUS_IN_PAGE_ERROR`)
 W systemie Windows odłączenie nośnika, z którego bezpośrednio pracuje proces PE, potrafi wywołać błąd stronicowania pamięci (`0xC0000006`) i natychmiastowy crash programu zanim ten zdąży cokolwiek zamknąć.
-- **Rozwiązanie:** Program po uruchomieniu z pendrive'a duplikuje swój proces do `%TEMP%` i stamtąd nadzoruje sesję.
-- **Odporność na AppLocker:** Jeśli polityka bezpieczeństwa uczelni blokuje odpalanie `.exe` z katalogu Temp, program automatycznie wykrywa kod błędu i przełącza się na bezpieczne działanie in-place.
+- **Rozwiązanie:** Program po uruchomieniu z pendrive'a kopiuje proces do `%TEMP%` i stamtąd nadzoruje sesję.
+- **Odporność na AppLocker:** Jeśli polityka bezpieczeństwa uczelni blokuje odpalanie `.exe` z katalogu Temp, program automatycznie to wykrywa i przełącza się na bezpieczne działanie in-place wprost z pendrive'a.
 
 ### 3. Pewna identyfikacja pendrive'a (Volume Serial Number)
 Samo sprawdzanie czy litera dysku (np. `E:\`) istnieje to za mało – ktoś mógłby wyjąć Twój pendrive i włożyć inny.
@@ -66,41 +91,20 @@ Standardowe włączenie portu debugowania ustawia w przeglądarce `navigator.web
 
 ---
 
-## Szybki start
+## 🛠️ Dla programistów: Budowanie ze źródeł (opcjonalne)
 
-### Krok 1: Zbudowanie pliku `.exe` (robisz na swoim komputerze)
-
-Wymagany Python 3.10+ na Twoim domowym komputerze.
+Jeśli wolisz sam zbudować plik `.exe` z kodu źródłowego:
 
 ```bash
 # 1. Sklonuj repozytorium
-git clone https://github.com/twoj-login/wsb-passkey.git
+git clone https://github.com/JAMAKOCZI/wsb-passkey.git
 cd wsb-passkey
 
-# 2. Zainstaluj zależności i zbuduj przenośny plik .exe
+# 2. Uruchom skrypt budujący (wymaga Python 3.10+)
 build.bat
 ```
-*(Alternatywnie ręcznie: `pip install -r requirements.txt` oraz `pyinstaller --onefile --windowed --name WSBPasskey wsb_passkey.py`)*.
 
-W katalogu `dist\` powstanie plik `WSBPasskey.exe` (~15 MB, w pełni samodzielny, zawiera w sobie całe środowisko).
-
-### Krok 2: Przygotowanie pendrive'a
-
-1. Skopiuj `WSBPasskey.exe` na swój pendrive.
-2. Uruchom go na swoim komputerze z pendrive'a.
-3. Pojawi się okienko pierwszej konfiguracji:
-   - Podaj swój uczelniany e-mail (`...login.wsb.pl` / konto Microsoft),
-   - Hasło,
-   - Ustal PIN (min. 6 znaków).
-4. Na pendrivie obok pliku exe powstanie zaszyfrowany plik `wsb_passkey.dat`.
-
-### Krok 3: Użycie na uczelni
-
-1. Podłącz pendrive do komputera na uczelni.
-2. Uruchom `WSBPasskey.exe` i wpisz PIN.
-3. Przeglądarka otworzy się i sama zaloguje Cię na MeritoGo.
-4. **Gdy skończysz zajęcia: po prostu wyciągnij pendrive.**
-   - W ciągu ok. 1-2 sekund program wyloguje sesję z CAS i Microsoftu, zamknie przeglądarkę i skasuje profil tymczasowy.
+W katalogu `dist\` powstanie plik `WSBPasskey.exe`.
 
 ---
 
@@ -129,7 +133,7 @@ WSBPasskey.exe --setup
 # Wymuszenie konkretnej przeglądarki (domyślnie Edge, fallback Chrome)
 WSBPasskey.exe --browser chrome
 
-# Wskazanie folderu z kluczem wsb_passkey.dat (jeśli program leży w innym miejscu)
+# Wskazanie innego folderu z kluczem wsb_passkey.dat
 WSBPasskey.exe --usb-dir E:\
 ```
 
