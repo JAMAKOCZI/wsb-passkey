@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# PyInstaller / Kompilacja
+build/
+dist/
+*.spec
+
+# Dane użytkownika (hasła i klucze - NIGDY nie commitować!)
+*.dat
+*.dat.tmp
+*.tmp
+*.log
+
+# Środowiska IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Windows
+Thumbs.db
+Desktop.ini
