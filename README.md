@@ -8,7 +8,7 @@
 
 ---
 
-## ⚡ Szybki start (Bez instalowania czegokolwiek)
+## ⚡ Szybki start
 
 **Nie musisz instalować Pythona ani niczego kompilować.** 
 
